@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 
 import androidx.preference.ListPreference;
+import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceCategory;
@@ -34,6 +35,7 @@ import androidx.preference.SwitchPreference;
 import com.android.internal.util.ArrayUtils;
 import com.android.settingslib.widget.MainSwitchPreference;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,10 +54,13 @@ public class NotifsSettingsFragment extends PreferenceFragment implements Prefer
     private MainSwitchPreference mSwitchBar;
     private PreferenceCategory mCategory;
 
-    private List<ApplicationInfo> mApps;
+    private List<String> mEssentialApps = new ArrayList<String>();
+    private List<String> mEssentialAppsNames = new ArrayList<String>();
+
     private PackageManager mPackageManager;
 
     private ListPreference mListPreference;
+    private MultiSelectListPreference mMultiSelectListPreference;
 
     private GlyphAnimationPreference mGlyphAnimationPreference;
 
@@ -82,7 +87,7 @@ public class NotifsSettingsFragment extends PreferenceFragment implements Prefer
         mGlyphAnimationPreference = (GlyphAnimationPreference) findPreference(Constants.GLYPH_NOTIFS_SUB_PREVIEW);
 
         mPackageManager = getActivity().getPackageManager();
-        mApps = mPackageManager.getInstalledApplications(PackageManager.GET_GIDS);
+        List<ApplicationInfo> mApps = mPackageManager.getInstalledApplications(PackageManager.GET_GIDS);
         Collections.sort(mApps, new ApplicationInfo.DisplayNameComparator(mPackageManager));
         for (ApplicationInfo app : mApps) {
             if(mPackageManager.getLaunchIntentForPackage(app.packageName) != null  && !ArrayUtils.contains(Constants.APPS_TO_IGNORE, app.packageName)) { // apps with launcher intent
@@ -93,8 +98,17 @@ public class NotifsSettingsFragment extends PreferenceFragment implements Prefer
                 mSwitchPreference.setDefaultValue(true);
                 mSwitchPreference.setOnPreferenceChangeListener(this);
                 mCategory.addPreference(mSwitchPreference);
+
+                mEssentialApps.add(app.packageName);
+                mEssentialAppsNames.add(app.loadLabel(mPackageManager).toString());
             }
         }
+
+        mMultiSelectListPreference = (MultiSelectListPreference) findPreference(Constants.GLYPH_NOTIFS_SUB_ESSENTIAL);
+        mMultiSelectListPreference.setOnPreferenceChangeListener(this);
+        mMultiSelectListPreference.setEntries(mEssentialAppsNames.toArray(new CharSequence[0]));
+        mMultiSelectListPreference.setEntryValues(mEssentialApps.toArray(new CharSequence[0]));
+
     }
 
     @Override
@@ -111,6 +125,10 @@ public class NotifsSettingsFragment extends PreferenceFragment implements Prefer
         if (preferenceKey.equals(Constants.GLYPH_NOTIFS_SUB_ANIMATIONS)) {
             mGlyphAnimationPreference.updateAnimation(SettingsManager.isGlyphNotifsEnabled(),
                 newValue.toString(), 1500);
+        }
+
+        if (preferenceKey.equals(Constants.GLYPH_NOTIFS_SUB_ESSENTIAL)) {
+            //if (DEBUG) Log.d(TAG, "onPreferenceChange: " + newValue.toString());
         }
 
         //mHandler.post(() -> ServiceUtils.checkGlyphService());
