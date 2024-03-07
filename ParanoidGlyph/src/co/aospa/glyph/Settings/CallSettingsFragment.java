@@ -27,6 +27,7 @@ import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.PreferenceScreen;
 
+import com.android.internal.util.ArrayUtils;
 import com.android.settingslib.widget.MainSwitchPreference;
 
 import co.aospa.glyph.R;
@@ -64,6 +65,9 @@ public class CallSettingsFragment extends PreferenceFragment implements Preferen
         mListPreference.setOnPreferenceChangeListener(this);
         mListPreference.setEntries(ResourceUtils.getCallAnimations());
         mListPreference.setEntryValues(ResourceUtils.getCallAnimations());
+        if (!ArrayUtils.contains(ResourceUtils.getCallAnimations(), mListPreference.getValue())) {
+            mListPreference.setValue(ResourceUtils.getString("glyph_settings_call_animations_default"));
+        }
 
         mGlyphAnimationPreference = (GlyphAnimationPreference) findPreference(Constants.GLYPH_CALL_SUB_PREVIEW);
     }
