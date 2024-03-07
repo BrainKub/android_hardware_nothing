@@ -41,6 +41,9 @@ public final class ServiceUtils {
 
     private static Context context = Constants.CONTEXT;
 
+    private static final int CHARGING_LEVELS = ResourceUtils.getInteger("glyph_settings_battery_levels_num");
+    private static boolean glyphChargingMeterAvailable = CHARGING_LEVELS > 0;
+
     private static final String POWERSHARE_ACTIVE = ResourceUtils.getString("glyph_settings_paths_powershare_active_absolute");
     private static final String POWERSHARE_ENABLED = ResourceUtils.getString("glyph_settings_paths_powershare_enabled_absolute");
     private static boolean glyphPowershareAvailable = !POWERSHARE_ACTIVE.isBlank() && !POWERSHARE_ENABLED.isBlank();
@@ -59,6 +62,7 @@ public final class ServiceUtils {
 
     private static void startChargingService() {
         if (DEBUG) Log.d(TAG, "Starting Glyph charging service");
+        if (!glyphChargingMeterAvailable) return;
         context.startServiceAsUser(new Intent(context, ChargingService.class),
                 UserHandle.CURRENT);
     }
