@@ -24,7 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.widget.Switch;
+import android.widget.CompoundButton;
 
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
@@ -35,15 +35,14 @@ import androidx.preference.SwitchPreference;
 
 import com.android.settingslib.PrimarySwitchPreference;
 import com.android.settingslib.widget.MainSwitchPreference;
-import com.android.settingslib.widget.OnMainSwitchChangeListener;
 
 import co.aospa.glyph.R;
 import co.aospa.glyph.Constants.Constants;
 import co.aospa.glyph.Manager.SettingsManager;
 import co.aospa.glyph.Utils.ServiceUtils;
 
-public class SettingsFragment extends PreferenceFragment implements OnPreferenceChangeListener,
-        OnMainSwitchChangeListener {
+public class SettingsFragment extends PreferenceFragment implements CompoundButton.OnCheckedChangeListener, 
+        Preference.OnPreferenceChangeListener {
 
     private MainSwitchPreference mSwitchBar;
 
@@ -160,7 +159,7 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
     }
 
     @Override
-    public void onSwitchChanged(Switch switchView, boolean isChecked) {
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         SettingsManager.enableGlyph(isChecked);
 
         mSwitchBar.setChecked(isChecked);
