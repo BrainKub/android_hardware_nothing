@@ -21,7 +21,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.audiofx.Visualizer;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 
 import co.aospa.glyph.Manager.AnimationManager;
@@ -31,6 +34,9 @@ public class MusicVisualizerService extends Service {
     private static final String TAG = "GlyphMusicVisualizerService";
     private static final boolean DEBUG = true;
 
+    private AudioManager mAudioManager;
+    private HandlerThread thread;
+    private Handler mHandler;
     private Visualizer mVisualizer;
     private int bufferSize;
     private boolean isRecording = false;
@@ -51,6 +57,12 @@ public class MusicVisualizerService extends Service {
     public void onCreate() {
         if (DEBUG) Log.d(TAG, "Creating service");
 
+        // Run visualizer on a handler thread
+        thread = new HandlerThread("MusicVisualizerService");
+        thread.start();
+        Looper looper = thread.getLooper();
+        mHandler = new Handler(looper);
+
         AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         // Create a visualizer with the audio session ID (0) which takes the entire output mix
@@ -59,13 +71,14 @@ public class MusicVisualizerService extends Service {
         // Set the capture size to the maximum available
         bufferSize = Visualizer.getCaptureSizeRange()[1];
         mVisualizer.setCaptureSize(bufferSize);
-
-        mVisualizer.setDataCaptureListener(
-            new Visualizer.OnDataCaptureListener() {
-                @Override
-                public void onWaveFormDataCapture(
-                        Visualizer visualizer, byte[] waveform, int samplingRate) {
-                }
+        
+        mHandler.post(() -> {
+            // Set data capture listener for visualizer
+            mVisualizer.setDataCaptureListener(
+                new Visualizer.OnDataCaptureListener() {
+                    @Override
+                    public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
+                    }
 
                 @Override
                 public void onFftDataCapture(
@@ -89,9 +102,9 @@ public class MusicVisualizerService extends Service {
         mCurrentAvgEnergyOneSec[3] = -1;
         mCurrentAvgEnergyOneSec[4] = -1;
 
-        // Set the start time for the current one second interval
-        mSystemTimeStartSec = System.currentTimeMillis();
-
+            // Set the start time for the current one second interval
+            mSystemTimeStartSec = System.currentTimeMillis();      
+        });
     }
 
     @Override
@@ -105,6 +118,7 @@ public class MusicVisualizerService extends Service {
         if (DEBUG) Log.d(TAG, "Destroying service");
         mVisualizer.setEnabled(false);
         mVisualizer.release();
+        thread.quit();
         super.onDestroy();
     }
 
