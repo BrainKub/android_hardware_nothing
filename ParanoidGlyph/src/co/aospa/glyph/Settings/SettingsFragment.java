@@ -42,6 +42,7 @@ import com.android.settingslib.widget.MainSwitchPreference;
 import co.aospa.glyph.R;
 import co.aospa.glyph.Constants.Constants;
 import co.aospa.glyph.Manager.SettingsManager;
+import co.aospa.glyph.Utils.ResourceUtils;
 import co.aospa.glyph.Utils.ServiceUtils;
 
 public class SettingsFragment extends PreferenceFragment implements CompoundButton.OnCheckedChangeListener, 
@@ -50,6 +51,7 @@ public class SettingsFragment extends PreferenceFragment implements CompoundButt
     private MainSwitchPreference mSwitchBar;
 
     private SwitchPreference mFlipPreference;
+    private SwitchPreference mAutoBrightnessPreference;
     private SeekBarPreference mBrightnessPreference;
     private PrimarySwitchPreference mNotifsPreference;
     private PrimarySwitchPreference mCallPreference;
@@ -83,8 +85,19 @@ public class SettingsFragment extends PreferenceFragment implements CompoundButt
         mFlipPreference.setEnabled(glyphEnabled);
         mFlipPreference.setOnPreferenceChangeListener(this);
 
+        mAutoBrightnessPreference = (SwitchPreference) findPreference(Constants.GLYPH_AUTO_BRIGHTNESS_ENABLE);
+        if (ResourceUtils.getString("glyph_light_sensor").isBlank()) {
+            getPreferenceScreen().removePreference(mAutoBrightnessPreference);
+        }
+        mAutoBrightnessPreference.setEnabled(glyphEnabled);
+        mAutoBrightnessPreference.setOnPreferenceChangeListener(this);
+
         mBrightnessPreference = (SeekBarPreference) findPreference(Constants.GLYPH_BRIGHTNESS);
-        mBrightnessPreference.setEnabled(glyphEnabled);
+        if (mAutoBrightnessPreference.isChecked()) {
+            mBrightnessPreference.setEnabled(false);
+        } else {
+            mBrightnessPreference.setEnabled(glyphEnabled);
+        }
         mBrightnessPreference.setMin(1);
         mBrightnessPreference.setMax(Constants.getBrightnessLevels().length);
         mBrightnessPreference.setValue(SettingsManager.getGlyphBrightnessSetting());
@@ -145,6 +158,10 @@ public class SettingsFragment extends PreferenceFragment implements CompoundButt
             SettingsManager.setGlyphNotifsEnabled(!mNotifsPreference.isChecked());
         }
 
+        if (preferenceKey.equals(Constants.GLYPH_AUTO_BRIGHTNESS_ENABLE)) {
+            mBrightnessPreference.setEnabled(mAutoBrightnessPreference.isChecked());
+        }
+
         if (preferenceKey.equals(Constants.GLYPH_MUSIC_VISUALIZER_ENABLE)) {
             boolean isChecked = mMusicVisualizerPreference.isChecked();
             mFlipPreference.setEnabled(isChecked);
@@ -170,7 +187,8 @@ public class SettingsFragment extends PreferenceFragment implements CompoundButt
         mSwitchBar.setChecked(isChecked);
 
         mFlipPreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
-        mBrightnessPreference.setEnabled(isChecked);
+        mAutoBrightnessPreference.setEnabled(isChecked);
+        mBrightnessPreference.setEnabled(isChecked && !mAutoBrightnessPreference.isChecked());
         mNotifsPreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
         mNotifsPreference.setSwitchEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
         mCallPreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
