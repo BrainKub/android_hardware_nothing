@@ -124,74 +124,65 @@ public final class AnimationManager {
 
         StatusManager.setAnimationActive(true);
 
-        boolean batteryDot = ResourceUtils.getBoolean("glyph_settings_battery_dot");
-        int[] batteryArray = new int[ResourceUtils.getInteger("glyph_settings_battery_levels_num")];
-        int amount = (int) (Math.floor((batteryLevel / 100.0) * (batteryArray.length - (batteryDot ? 2 : 1))) + (batteryDot ? 2 : 1));
+        int[] batteryArray = StatusManager.getBatteryArray();
+        int amount = (int) Math.floor((batteryLevel / 100D) * batteryArray.length);
         int last = StatusManager.getChargingLedLast();
+        int next = amount - 1;
 
-            try {
-                for (int i = 0; i < batteryArray.length; i++) {
+        try {
+            if (last <= next) {
+                for (int i = last; i <= next; i++) {
                     if (checkInterruption("charging")) throw new InterruptedException();
+                    StatusManager.setChargingLedLast(i);
                     batteryArray[i] = Constants.getBrightness();
-                    if (batteryDot && i == 0) continue;
                     updateLedFrame(batteryArray);
-                    Thread.sleep(15);
+                    Thread.sleep(23);
                 }
-                for (int i = batteryArray.length - 1; i > amount - 1; i--) {
+            } else if (last > next) {
+                for (int i = last; i > next; i--) {
                     if (checkInterruption("charging")) throw new InterruptedException();
+                    StatusManager.setChargingLedLast(i);
                     batteryArray[i] = 0;
                     updateLedFrame(batteryArray);
-                    Thread.sleep(5);
+                    Thread.sleep(23);
                 }
-                long start = System.currentTimeMillis();
-                while (System.currentTimeMillis() - start <= 2000) {
-                    if (checkInterruption("charging")) throw new InterruptedException();
-                }
-                for (int i = amount - 1; i >= 0; i--) {
-                    if (checkInterruption("charging")) throw new InterruptedException();
-                    batteryArray[i] = 0;
-                    updateLedFrame(batteryArray);
-                    Thread.sleep(11);
-                }
-                if (last != 0) {
-                    if (checkInterruption("charging")) throw new InterruptedException();
-                    updateLedFrame(batteryArray);
-                }
-            } catch (InterruptedException e) {
-                if (DEBUG) Log.d(TAG, "Exception while playing animation, interrupted | name: charging");
-                if (!StatusManager.isAllLedActive())
-                    updateLedFrame(new int[batteryArray.length]);
-            } finally {
-                StatusManager.setAnimationActive(false);
-                StatusManager.setBatteryLevelLast(batteryLevel);
-                StatusManager.setBatteryArrayLast(batteryArray);
-                if (DEBUG) Log.d(TAG, "Done playing animation | name: charging");
             }
+        } catch (InterruptedException e) {
+            if (DEBUG) Log.d(TAG, "Exception while playing animation, interrupted | name: charging");
+            if (!StatusManager.isAllLedActive())
+                updateLedFrame(new int[batteryArray.length]);
+        } finally {
+            StatusManager.setAnimationActive(false);
+            StatusManager.setBatteryArray(batteryArray);
+            if (DEBUG) Log.d(TAG, "Done playing animation | name: charging");
         }
+    }
 
     public static void dismissCharging() {
-        if (StatusManager.getBatteryLevelLast() == 0 
-            || StatusManager.getBatteryArrayLast() == null)
+        int[] emptyArray = new int[ResourceUtils.getInteger("glyph_settings_battery_levels_num")];;
+        int[] batteryArray = StatusManager.getBatteryArray();
+
+        if (Arrays.equals(emptyArray, batteryArray))
             return;
         if (!check("Dismiss charging", false))
             return;
         StatusManager.setAnimationActive(true);
-        int[] batteryArrayLast = StatusManager.getBatteryArrayLast();
+
         try {
             if (checkInterruption("Dismiss charging")) throw new InterruptedException();
-            for (int i = batteryArrayLast.length - 1; i >= 0; i--) {
+            for (int i = batteryArray.length - 1; i >= 0; i--) {
                 if (checkInterruption("Dismiss charging")) throw new InterruptedException();
-                if (batteryArrayLast[i] != 0) {
+                if (batteryArray[i] != 0) {
                     StatusManager.setChargingLedLast(i);
-                    batteryArrayLast[i] = 0;
-                    updateLedFrame(batteryArrayLast);
-                    Thread.sleep(17);
+                    batteryArray[i] = 0;
+                    updateLedFrame(batteryArray);
+                    Thread.sleep(23);
                 }
             }
         } catch (InterruptedException e) {
             if (DEBUG) Log.d(TAG, "Exception while playing animation, interrupted | name: Dismiss charging");
             if (!StatusManager.isAllLedActive()) {
-                updateLedFrame(new int[batteryArrayLast.length]);
+                updateLedFrame(new int[batteryArray.length]);
             }
         } finally {
             StatusManager.setAnimationActive(false);
