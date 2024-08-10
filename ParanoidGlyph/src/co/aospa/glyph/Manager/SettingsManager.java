@@ -44,8 +44,8 @@ public final class SettingsManager {
     }
 
     public static boolean isGlyphEnabled() {
-        return Settings.Secure.getInt(context.getContentResolver(),
-                Constants.GLYPH_ENABLE, 1) != 0;
+        return (Settings.Secure.getInt(context.getContentResolver(),Constants.GLYPH_ENABLE, 1) != 0 
+            || PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.GLYPH_ENABLE, false));
     }
 
     public static boolean isGlyphFlipEnabled() {
