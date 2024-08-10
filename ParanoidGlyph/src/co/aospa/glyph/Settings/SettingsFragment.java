@@ -114,17 +114,6 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
         mMusicVisualizerPreference = (SwitchPreferenceCompat) findPreference(Constants.GLYPH_MUSIC_VISUALIZER_ENABLE);
         mMusicVisualizerPreference.setEnabled(glyphEnabled);
         mMusicVisualizerPreference.setOnPreferenceChangeListener(this);
-        if (mMusicVisualizerPreference.isChecked()) {
-            mFlipPreference.setEnabled(false);
-            //mBrightnessPreference.setEnabled(false);
-            mNotifsPreference.setEnabled(false);
-            mNotifsPreference.setSwitchEnabled(false);
-            mCallPreference.setEnabled(false);
-            mCallPreference.setSwitchEnabled(false);
-            mChargingLevelPreference.setEnabled(false);
-            mVolumeLevelPreference.setEnabled(false);
-            mChargingPowersharePreference.setEnabled(false);
-        }
 
         mHandler.post(() -> ServiceUtils.checkGlyphService());
     }
@@ -141,19 +130,6 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
             SettingsManager.setGlyphNotifsEnabled(!mNotifsPreference.isChecked());
         }
 
-        if (preferenceKey.equals(Constants.GLYPH_MUSIC_VISUALIZER_ENABLE)) {
-            boolean isChecked = mMusicVisualizerPreference.isChecked();
-            mFlipPreference.setEnabled(isChecked);
-            //mBrightnessPreference.setEnabled(isChecked);
-            mNotifsPreference.setEnabled(isChecked);
-            mNotifsPreference.setSwitchEnabled(isChecked);
-            mCallPreference.setEnabled(isChecked);
-            mCallPreference.setSwitchEnabled(isChecked);
-            mChargingLevelPreference.setEnabled(isChecked);
-            mVolumeLevelPreference.setEnabled(isChecked);
-            mChargingPowersharePreference.setEnabled(isChecked);
-        }
-
         mHandler.post(() -> ServiceUtils.checkGlyphService());
 
         return true;
@@ -165,15 +141,15 @@ public class SettingsFragment extends PreferenceFragment implements OnPreference
 
         mSwitchBar.setChecked(isChecked);
 
-        mFlipPreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
+        mFlipPreference.setEnabled(isChecked);
         mBrightnessPreference.setEnabled(isChecked);
-        mNotifsPreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
-        mNotifsPreference.setSwitchEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
-        mCallPreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
-        mCallPreference.setSwitchEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
-        mChargingLevelPreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
-        mChargingPowersharePreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
-        mVolumeLevelPreference.setEnabled(isChecked && !mMusicVisualizerPreference.isChecked());
+        mNotifsPreference.setEnabled(isChecked);
+        mNotifsPreference.setSwitchEnabled(isChecked);
+        mCallPreference.setEnabled(isChecked);
+        mCallPreference.setSwitchEnabled(isChecked);
+        mChargingLevelPreference.setEnabled(isChecked);
+        mChargingPowersharePreference.setEnabled(isChecked);
+        mVolumeLevelPreference.setEnabled(isChecked);
         mMusicVisualizerPreference.setEnabled(isChecked);
 
         mHandler.post(() -> ServiceUtils.checkGlyphService());
