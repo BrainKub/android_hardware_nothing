@@ -86,6 +86,7 @@ public class SettingsFragment extends PreferenceFragment implements CompoundButt
             getPreferenceScreen().removePreference(mAutoBrightnessPreference);
         }
         mAutoBrightnessPreference.setEnabled(glyphEnabled);
+        mAutoBrightnessPreference.setChecked(SettingsManager.isGlyphAutoBrightnessEnabled());
         mAutoBrightnessPreference.setOnPreferenceChangeListener(this);
 
         mBrightnessPreference = (SeekBarPreference) findPreference(Constants.GLYPH_BRIGHTNESS);
