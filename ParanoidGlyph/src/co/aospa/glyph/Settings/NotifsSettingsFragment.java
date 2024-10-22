@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -46,8 +47,8 @@ import co.aospa.glyph.Preference.GlyphAnimationPreference;
 import co.aospa.glyph.Utils.ResourceUtils;
 import co.aospa.glyph.Utils.ServiceUtils;
 
-public class NotifsSettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener,
-        CompoundButton.OnCheckedChangeListener {
+public class NotifsSettingsFragment extends PreferenceFragment implements OnPreferenceChangeListener,
+        OnCheckedChangeListener {
 
     private PreferenceScreen mScreen;
 
