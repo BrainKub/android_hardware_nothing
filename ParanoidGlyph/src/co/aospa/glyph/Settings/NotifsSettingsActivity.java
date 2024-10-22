@@ -34,7 +34,8 @@ public class NotifsSettingsActivity extends CollapsingToolbarBaseActivity {
         if (fragment == null) {
             mNotifsSettingsFragment = new NotifsSettingsFragment();
             getFragmentManager().beginTransaction()
-                .add(com.android.settingslib.collapsingtoolbar.R.id.content_frame, mNotifsSettingsFragment, TAG_GLYPH)
+                .add(com.android.settingslib.collapsingtoolbar.R.id.content_frame,
+                    mNotifsSettingsFragment, TAG_GLYPH)
                 .commit();
         } else {
             mNotifsSettingsFragment = (NotifsSettingsFragment) fragment;

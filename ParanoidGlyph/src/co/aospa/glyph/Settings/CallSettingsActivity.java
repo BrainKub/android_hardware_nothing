@@ -34,7 +34,8 @@ public class CallSettingsActivity extends CollapsingToolbarBaseActivity {
         if (fragment == null) {
             mCallSettingsFragment = new CallSettingsFragment();
             getFragmentManager().beginTransaction()
-                .add(com.android.settingslib.collapsingtoolbar.R.id.content_frame, mCallSettingsFragment, TAG_GLYPH)
+                .add(com.android.settingslib.collapsingtoolbar.R.id.content_frame,
+                    mCallSettingsFragment, TAG_GLYPH)
                 .commit();
         } else {
             mCallSettingsFragment = (CallSettingsFragment) fragment;

@@ -36,7 +36,8 @@ public class SettingsActivity extends CollapsingToolbarBaseActivity {
         if (fragment == null) {
             mSettingsFragment = new SettingsFragment();
             getFragmentManager().beginTransaction()
-                .add(com.android.settingslib.collapsingtoolbar.R.id.content_frame, mSettingsFragment, TAG_GLYPH)
+                .add(com.android.settingslib.collapsingtoolbar.R.id.content_frame,
+                    mSettingsFragment, TAG_GLYPH)
                 .commit();
         } else {
             mSettingsFragment = (SettingsFragment) fragment;
