@@ -51,7 +51,7 @@ public class ChargingService extends Service {
     private PowerManager mPowerManager;
 
     private Sensor mAccelerometerSensor;
-    private static final float ACCELEROMETER_THRESHOLD = 10.0f;
+    private static final float ACCELEROMETER_THRESHOLD = 10.1f;
     private static final float ZFACEDOWN_THRESHOLD = -5.0f;
 
     private Runnable dismissCharging = new Runnable() {
